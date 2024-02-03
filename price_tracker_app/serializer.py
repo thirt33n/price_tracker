@@ -4,5 +4,5 @@ from .models import Alerts
 class AlertSerializer(serializers.ModelSerializer):
     class Meta:
         model = Alerts
-        fields=['user','price_targ']
+        fields=['id','user','price_targ','status']
         
