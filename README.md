@@ -73,7 +73,10 @@ celery -A price_tracker beat -l info
 
 ### In Case you are unable to recreate the project in your system view this video:
 
-![Video](./Demo_price_tracker.mp4)
+
+https://github.com/thirt33n/price_tracker/assets/55974622/08b5b99b-1f89-4c20-bd12-2530646493f1
+
+
 
 
 ## Author
