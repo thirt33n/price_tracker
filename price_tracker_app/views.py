@@ -7,6 +7,7 @@ from .export_binance import getPrice
 from rest_framework.response import Response
 from apscheduler.schedulers.background import BackgroundScheduler
 from django.core.management import call_command
+from .tasks import send_email_task
 
 class AlertViews(viewsets.ModelViewSet):
     queryset = Alerts.objects.all()
@@ -22,38 +23,19 @@ class AlertViews(viewsets.ModelViewSet):
             alert.save()
             print(f"Price Dropped below for id: {alert.id} Current Price:  {cur_price_default}")
 
+            send_email_task.delay(
+                subject='BTC PRICE DROPPED BELOW YOUR TARGET',
+                message=f'THE BTC PRICE HAS DROPPED BELOW YOUR SET TARGET OF {alert.price_targ} the current BTC price is: {cur_price_default}.',
+                from_email='trial@example.com',
+                recipient_list=[alert.email],
+            )
 
-
-    #@action(detail=True, methods=['post'])
-    
-        
-
-
-
-
-        #cur_price_default = 38000 #Placeholder for testing
-       
-        #if alerter.price_targ > cur_price_default :
-        #    alerter.status = 'triggered'
-        #    alerter.save()
-        #    print("Price dropped below target cur_price: ",cur_price_default)
-            
-           
-            
-            #requests.post("https://ntfy.sh/oxost",      #Testing before email implementation using ntfy for notifications
-            #data="Price Dropped".encode(encoding='utf-8'))
-            
-            
-            #return Response({'status': 'Alert Triggered'})
-        #else:
-        #    print("Price :",cur_price_default)
-        #    return Response({'status':'Price not dropped'})
         
 
 
 
     def create(self,request, *args, **kwargs):
-        allowed_fields = {'user', 'price_targ'}
+        allowed_fields = {'user', 'price_targ','email'}
         data = {key: request.data[key] for key in allowed_fields if key in request.data}
 
         serializer = self.get_serializer(data=data)
